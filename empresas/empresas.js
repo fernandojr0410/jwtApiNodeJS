@@ -7,7 +7,7 @@ function findAll() {
 }
 
 function findById(id) {
-  return queryPromise(`SELECT * FROM empresa WHERE id_empresa ${id}`);
+  return queryPromise(`SELECT * FROM empresa WHERE id_empresa = ${id}`);
 }
 
 function insert(dados) {
