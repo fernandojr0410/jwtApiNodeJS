@@ -11,13 +11,13 @@ function findById(id) {
 }
 
 function insert(dados) {
-  const { nome_completo, cpf, setor, cargo, id_empresa } = dados;
-  let sql = `INSERT INTO funcionario (nome_completo, cpf, setor, cargo, id_empresa) VALUES ('${nome_completo}', ${cpf}, '${setor}', '${cargo}', ${id_empresa})`;
+  const { nome_completo, cpf, setor, cargo } = dados;
+  let sql = `INSERT INTO funcionario (nome_completo, cpf, setor, cargo) VALUES ('${nome_completo}', ${cpf}, '${setor}', '${cargo}')`;
   return queryPromise(sql);
 }
 
 function update(dados) {
-  const { id, nome_completo, cpf, setor, cargo, id_empresa } = dados;
+  const { id, nome_completo, cpf, setor, cargo } = dados;
   const params = [];
   let sql = "UPDATE funcionario SET";
 
@@ -39,11 +39,6 @@ function update(dados) {
   if (cargo) {
     sql += " cargo = ?,";
     params.push(cargo);
-  }
-
-  if (id_empresa) {
-    sql += " id_empresa = ?,";
-    params.push(id_empresa);
   }
 
   params.push(id);

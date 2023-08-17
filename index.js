@@ -3,8 +3,9 @@ const bodyParser = require("body-parser");
 
 const conn = require("./db/mysql.js");
 const empresas = require("./empresas/empresas.js");
-const funcionarios = require("./funcionarios/funcionarios.js");
 const clientes = require("./clientes/clientes.js");
+const funcionarios = require("./funcionarios/funcionarios.js");
+const produtos = require("./produtos/produtos.js");
 
 const app = express();
 app.use(express.json());
@@ -74,6 +75,65 @@ app.delete("/empresas/delete", (req, res) => {
     });
 });
 
+// Clientes
+app.get("/clientes/findAll", (req, res) => {
+  clientes
+    .findAll()
+    .then((results) => {
+      res.send(results);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+});
+
+app.get("/clientes/findById", (req, res) => {
+  clientes
+    .findById(req.query.id)
+    .then((results) => {
+      res.send(results);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+});
+
+app.post("/clientes/insert", (req, res) => {
+  clientes
+    .insert(req.body)
+    .then(() => {
+      res.send("Cliente cadastrado com sucesso!");
+    })
+    .catch((error) => {
+      console.error(error);
+      res.send(error);
+    });
+});
+
+app.put("/clientes/update", (req, res) => {
+  clientes
+    .update(req.body)
+    .then(() => {
+      res.send("Dados atualizados com sucesso!");
+    })
+    .catch((error) => {
+      console.error(error);
+      res.send(error);
+    });
+});
+
+app.delete("/clientes/delete", (req, res) => {
+  clientes
+    .deleteById(req.body)
+    .then(() => {
+      res.send("Registro deletado com sucesso!");
+    })
+    .catch((error) => {
+      console.error(error);
+      res.send(error);
+    });
+});
+
 // Funcionarios
 app.get("/funcionarios/findAll", (req, res) => {
   funcionarios
@@ -133,9 +193,9 @@ app.delete("/funcionarios/delete", (req, res) => {
     });
 });
 
-// Clientes
-app.get("/clientes/findAll", (req, res) => {
-  clientes
+//Produtos
+app.get("/produtos/findAll", (req, res) => {
+  produtos
     .findAll()
     .then((results) => {
       res.send(results);
@@ -145,8 +205,8 @@ app.get("/clientes/findAll", (req, res) => {
     });
 });
 
-app.get("/clientes/findById", (req, res) => {
-  clientes
+app.get("/produtos/findById", (req, res) => {
+  produtos
     .findById(req.query.id)
     .then((results) => {
       res.send(results);
@@ -156,8 +216,8 @@ app.get("/clientes/findById", (req, res) => {
     });
 });
 
-app.post("/clientes/insert", (req, res) => {
-  clientes
+app.post("/produtos/insert", (req, res) => {
+  produtos
     .insert(req.body)
     .then(() => {
       res.send("Cliente cadastrado com sucesso!");
@@ -168,11 +228,11 @@ app.post("/clientes/insert", (req, res) => {
     });
 });
 
-app.put("/clientes/update", (req, res) => {
-  clientes
+app.put("/produtos/update", (req, res) => {
+  produtos
     .update(req.body)
     .then(() => {
-      res.send("Dadaos atualizados com sucesso!");
+      res.send("Dados atualizados com sucesso!");
     })
     .catch((error) => {
       console.error(error);
@@ -180,11 +240,11 @@ app.put("/clientes/update", (req, res) => {
     });
 });
 
-app.delete("/clientes/delete", (req, res) => {
-  clientes
+app.delete("/produtos/delete", (req, res) => {
+  produtos
     .deleteById(req.body)
     .then(() => {
-      req.send("Registro deletado com sucesso!");
+      res.send("Registro deletado com sucesso!");
     })
     .catch((error) => {
       console.error(error);

@@ -11,73 +11,45 @@ function findById(id) {
 }
 
 function insert(dados) {
-  const {
-    nome_cliente,
-    cpf,
-    endereco,
-    telefone,
-    data_nascimento,
-    id_empresa,
-    id_funcionario,
-  } = dados;
-  let sql = `INSERT INTO cliente (nome_cliente, cpf, endereco, telefone, data_nascimento, id_empresa, id_funcionario) values ('${nome_cliente}', ${cpf}, '${endereco}', '${telefone}', '${data_nascimento}', ${id_empresa}, ${id_funcionario})`;
+  const { nome_cliente, cpf, endereco, telefone, data_nascimento } = dados;
+  let sql = `INSERT INTO cliente (nome_cliente, cpf, endereco, telefone, data_nascimento) values ('${nome_cliente}', ${cpf}, '${endereco}', '${telefone}', '${data_nascimento}')`;
   return queryPromise(sql);
 }
 
 function update(dados) {
-  const {
-    id,
-    nome_cliente,
-    cpf,
-    endereco,
-    telefone,
-    data_nascimento,
-    id_empresa,
-    id_funcionario,
-  } = dados;
+  const { id, nome_cliente, cpf, endereco, telefone, data_nascimento } = dados;
   const params = [];
-  let sql = "UPDATE cliente SET";
+  let sql = "UPDATE cliente SET ";
 
   if (nome_cliente) {
-    sql += "nome_cliente = ?,";
+    sql += "nome_cliente = ?, ";
     params.push(nome_cliente);
   }
 
   if (cpf) {
-    sql += "cpf = ?,";
+    sql += "cpf = ?, ";
     params.push(cpf);
   }
 
   if (endereco) {
-    sql += "endereco = ?,";
+    sql += "endereco = ?, ";
     params.push(endereco);
   }
 
   if (telefone) {
-    sql += "telefone = ?,";
+    sql += "telefone = ?, ";
     params.push(telefone);
   }
 
   if (data_nascimento) {
-    sql += "data_nascimento = ?,";
+    sql += "data_nascimento = ?, ";
     params.push(data_nascimento);
   }
 
-  if (id_empresa) {
-    sql += "id_empresa = ?,";
-    params.push(id_empresa);
-  }
-
-  if (id_funcionario) {
-    sql += "id_funcionario = ?,";
-    params.push(id_funcionario);
-  }
-
+  sql = sql.slice(0, -2);
+  sql += " WHERE id_cliente = ?";
   params.push(id);
 
-  sql += sql.slice(0, -1);
-
-  sql += "WHERE id_cliente = ?";
   return queryPromise(sql, params);
 }
 
