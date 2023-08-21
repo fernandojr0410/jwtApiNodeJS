@@ -11,52 +11,35 @@ function findById(id) {
 }
 
 function insert(dados) {
-  const { nome_produto, descricao, categoria, preco, quantidade, peso } = dados;
-  let sql = `INSERT INTO produto (nome_produto, descricao, categoria, preco, quantidade, peso) VALUES ('${nome_produto}', '${descricao}', '${categoria}', ${preco}, ${quantidade}, ${peso})`;
+  const { nome, preco, ativo } = dados;
+  let sql = `INSERT INTO produto (nome, preco, ativo) values ('${nome}', ${preco}, '${ativo}')`;
   return queryPromise(sql);
 }
 
 function update(dados) {
-  const { id, nome_produto, descricao, categoria, preco, quantidade, peso } =
-    dados;
+  const { id, nome, preco, ativo } = dados;
   const params = [];
-  let sql = "UPDATE produto SET";
+  let sql = "UPDATE produto SET ";
 
-  if (nome_produto) {
-    sql += " nome_produto = ?,";
-    params.push(nome_produto);
-  }
-
-  if (descricao) {
-    sql += " descricao = ?,";
-    params.push(descricao);
-  }
-
-  if (categoria) {
-    sql += " categoria = ?,";
-    params.push(categoria);
+  if (nome) {
+    sql += "nome = ?, ";
+    params.push(nome);
   }
 
   if (preco) {
-    sql += " preco = ?,";
+    sql += "preco = ?, ";
     params.push(preco);
   }
 
-  if (quantidade) {
-    sql += " quantidade = ?,";
-    params.push(quantidade);
+  if (ativo) {
+    sql += "ativo = ?, ";
+    params.push(ativo);
   }
 
-  if (peso) {
-    sql += " peso = ?,";
-    params.push(peso);
-  }
-
+  sql = sql.slice(0, -2);
+  sql += " WHERE id_produto = ?";
   params.push(id);
 
-  sql = sql.slice(0, -1);
-
-  sql += " WHERE id_produto = ?";
   return queryPromise(sql, params);
 }
 

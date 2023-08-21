@@ -11,49 +11,41 @@ function findById(id) {
 }
 
 function insert(dados) {
-  const { nome_completo, cpf, setor, cargo } = dados;
-  let sql = `INSERT INTO funcionario (nome_completo, cpf, setor, cargo) VALUES ('${nome_completo}', ${cpf}, '${setor}', '${cargo}')`;
+  const { nome, cpf, ativo } = dados;
+  let sql = `INSERT INTO funcionario (nome, cpf, ativo) values ('${nome}', ${cpf}, '${ativo}')`;
   return queryPromise(sql);
 }
 
 function update(dados) {
-  const { id, nome_completo, cpf, setor, cargo } = dados;
+  const { id, nome, cpf, ativo } = dados;
   const params = [];
-  let sql = "UPDATE funcionario SET";
+  let sql = "UPDATE funcionario SET ";
 
-  if (nome_completo) {
-    sql += " nome_completo = ?,";
-    params.push(nome_completo);
+  if (nome) {
+    sql += "nome = ?, ";
+    params.push(nome);
   }
 
   if (cpf) {
-    sql += " cpf = ?,";
+    sql += "cpf = ?, ";
     params.push(cpf);
   }
 
-  if (setor) {
-    sql += " setor = ?,";
-    params.push(setor);
+  if (ativo) {
+    sql += "ativo = ?, ";
+    params.push(ativo);
   }
 
-  if (cargo) {
-    sql += " cargo = ?,";
-    params.push(cargo);
-  }
-
+  sql = sql.slice(0, -2);
+  sql += " WHERE id_funcionario = ?";
   params.push(id);
 
-  sql = sql.slice(0, -1);
-
-  sql += " WHERE id_funcionario = ?";
   return queryPromise(sql, params);
 }
 
 function deleteById(ids) {
   const idsDelete = ids.toString();
-  return queryPromise(
-    `DELETE FROM funcionario WHERE id_funcionario IN (${idsDelete})`
-  );
+  return queryPromise(`DELETE FROM funcionario WHERE id_funcionario IN (${idsDelete})`);
 }
 
 module.exports = {

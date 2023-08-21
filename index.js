@@ -2,7 +2,6 @@ const express = require("express");
 const bodyParser = require("body-parser");
 
 const conn = require("./db/mysql.js");
-const empresas = require("./empresas/empresas.js");
 const clientes = require("./clientes/clientes.js");
 const funcionarios = require("./funcionarios/funcionarios.js");
 const produtos = require("./produtos/produtos.js");
@@ -15,65 +14,6 @@ app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 
 const PORT = 8080;
 const HOST = "http://localhost";
-
-// Empresa
-app.get("/empresas/findAll", (req, res) => {
-  empresas
-    .findAll()
-    .then((results) => {
-      res.send(results);
-    })
-    .catch((error) => {
-      console.error(error);
-    });
-});
-
-app.get("/empresas/findById", (req, res) => {
-  empresas
-    .findById(req.query.id)
-    .then((results) => {
-      res.send(results);
-    })
-    .catch((error) => {
-      console.error(error);
-    });
-});
-
-app.post("/empresas/insert", (req, res) => {
-  empresas
-    .insert(req.body)
-    .then(() => {
-      res.send("Empresa cadastrada com sucesso!");
-    })
-    .catch((error) => {
-      console.error(error);
-      res.send(error);
-    });
-});
-
-app.put("/empresas/update", (req, res) => {
-  empresas
-    .update(req.body)
-    .then(() => {
-      res.send("Dados atualizados com sucesso!");
-    })
-    .catch((error) => {
-      console.error(error);
-      res.send(error);
-    });
-});
-
-app.delete("/empresas/delete", (req, res) => {
-  empresas
-    .deleteById(req.body)
-    .then(() => {
-      res.send("Registro deletado com sucesso!");
-    })
-    .catch((error) => {
-      console.error(error);
-      res.send(error);
-    });
-});
 
 // Clientes
 app.get("/clientes/findAll", (req, res) => {
@@ -220,7 +160,7 @@ app.post("/produtos/insert", (req, res) => {
   produtos
     .insert(req.body)
     .then(() => {
-      res.send("Cliente cadastrado com sucesso!");
+      res.send("Produto cadastrado com sucesso!");
     })
     .catch((error) => {
       console.error(error);
