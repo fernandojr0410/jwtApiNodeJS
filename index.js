@@ -5,6 +5,8 @@ const conn = require("./db/mysql.js");
 const clientes = require("./clientes/clientes.js");
 const funcionarios = require("./funcionarios/funcionarios.js");
 const produtos = require("./produtos/produtos.js");
+const pedidos = require("./pedidos/pedidos.js");
+const itens_pedidos = require("./itens_pedidos/itens_pedidos.js");
 
 const app = express();
 app.use(express.json());
@@ -185,6 +187,124 @@ app.delete("/produtos/delete", (req, res) => {
     .deleteById(req.body)
     .then(() => {
       res.send("Registro deletado com sucesso!");
+    })
+    .catch((error) => {
+      console.error(error);
+      res.send(error);
+    });
+});
+
+//Pedidos
+app.get("/pedidos/findAll", (req, res) => {
+  pedidos
+    .findAll()
+    .then((results) => {
+      res.send(results);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+});
+
+app.get("/pedidos/findById", (req, res) => {
+  pedidos
+    .findById(req.query.id)
+    .then((results) => {
+      res.send(results);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+});
+
+app.post("/pedidos/insert", (req, res) => {
+  pedidos
+    .insert(req.body)
+    .then(() => {
+      res.send("Pedido realizado com sucesso!");
+    })
+    .catch((error) => {
+      console.error(error);
+      res.send(error);
+    });
+});
+
+app.put("/pedidos/update", (req, res) => {
+  pedidos
+    .update(req.body)
+    .then(() => {
+      res.send("Pedido atualizados com sucesso!");
+    })
+    .catch((error) => {
+      console.error(error);
+      res.send(error);
+    });
+});
+
+app.delete("/pedidos/delete", (req, res) => {
+  pedidos
+    .deleteById(req.body)
+    .then(() => {
+      res.send("Pedido deletado com sucesso!");
+    })
+    .catch((error) => {
+      console.error(error);
+      res.send(error);
+    });
+});
+
+//Itens Pedidos
+app.get("/itens_pedidos/findAll", (req, res) => {
+  itens_pedidos
+    .findAll()
+    .then((results) => {
+      res.send(results);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+});
+
+app.get("/itens_pedidos/findById", (req, res) => {
+  itens_pedidos
+    .findById(req.query.id)
+    .then((results) => {
+      res.send(results);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+});
+
+app.post("/itens_pedidos/insert", (req, res) => {
+  itens_pedidos
+    .insert(req.body)
+    .then(() => {
+      res.send("Pedido realizado com sucesso!");
+    })
+    .catch((error) => {
+      console.error(error);
+      res.send(error);
+    });
+});
+
+app.put("/itens_pedidos/update", (req, res) => {
+  itens_pedidos
+    .update(req.body)
+    .then(() => {
+      res.send("Pedido atualizados com sucesso!");
+    })
+    .catch((error) => {
+      console.error(error);
+      res.send(error);
+    });
+});
+
+app.delete("/itens_pedidos/delete", (req, res) => {
+  itens_pedidos
+    .deleteById(req.body)
+    .then(() => {
+      res.send("Pedido deletado com sucesso!");
     })
     .catch((error) => {
       console.error(error);
