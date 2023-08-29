@@ -3,12 +3,12 @@ const util = require("util");
 const queryPromise = util.promisify(conn().query).bind(conn());
 
 function findAll() {
-  return queryPromise("SELECT * FROM item_pedido AND id_produto");
+  return queryPromise("SELECT * FROM item_pedido");
 }
 
-function findById(id) {
+function findById(id_pedido, id_produto) {
   return queryPromise(
-    `SELECT * FROM item_pedido WHERE id_pedido AND id_produto = ${id}`
+    `SELECT * FROM item_pedido WHERE id_pedido = ${id_pedido} AND id_produto = ${id_produto}`
   );
 }
 
@@ -34,17 +34,28 @@ function update(dados) {
   }
 
   sql = sql.slice(0, -2);
-  sql += " WHERE id_pedido AND id_produto = ?";
+  sql += " WHERE id_pedido = ? AND id_produto = ?";
   params.push(id_pedido, id_produto);
 
   return queryPromise(sql, params);
 }
 
-function deleteById(ids) {
-  const idsDelete = ids.toString();
+function deleteById(id_pedido, id_produto) {
   return queryPromise(
-    `DELETE FROM pedido WHERE id_pedido AND id_produto IN (${idsDelete})`
+    `DELETE FROM item_pedido WHERE id_pedido = ${id_pedido} AND id_produto = ${id_produto}`
   );
+}
+
+async function calcularTotalConta(id_pedido) {
+  try {
+    const query = `SELECT SUM(p.preco) AS total FROM produto p
+                   INNER JOIN item_pedido ip ON p.id_produto = ip.id_produto
+                   WHERE ip.id_pedido = ${id_pedido}`;
+    const result = await queryPromise(query);
+    return result[0].total || 0;
+  } catch (error) {
+    throw error;
+  }
 }
 
 module.exports = {
@@ -53,4 +64,5 @@ module.exports = {
   insert,
   update,
   deleteById,
+  calcularTotalConta,
 };

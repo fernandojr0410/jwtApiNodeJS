@@ -12,7 +12,7 @@ function findById(id) {
 
 function insert(dados) {
   const { nome, cpf, ativo } = dados;
-  let sql = `INSERT INTO cliente (nome, cpf, ativo) values ('${nome}', ${cpf}, '${ativo}')`;
+  let sql = `INSERT INTO cliente (nome, cpf, ativo) values ('${nome}', '${cpf}', ${ativo})`;
   return queryPromise(sql);
 }
 

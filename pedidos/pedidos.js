@@ -11,13 +11,13 @@ function findById(id) {
 }
 
 function insert(dados) {
-  const { id_pedido, id_funcionario, id_cliente } = dados;
-  let sql = `INSERT INTO pedido (id_pedido, id_funcionario, id_cliente) values (${id_pedido}, ${id_funcionario}, ${id_cliente})`;
+  const { id_pedido, id_funcionario, id_cliente, status } = dados;
+  let sql = `INSERT INTO pedido (id_pedido, id_funcionario, id_cliente) values (${id_pedido}, ${id_funcionario}, ${id_cliente}, ${status})`;
   return queryPromise(sql);
 }
 
 function update(dados) {
-  const { id_pedido, id_funcionario, id_cliente } = dados;
+  const { id_pedido, id_funcionario, id_cliente, status } = dados;
   const params = [];
   let sql = "UPDATE pedido SET ";
 
@@ -34,6 +34,11 @@ function update(dados) {
   if (id_cliente) {
     sql += "id_cliente = ?, ";
     params.push(id_cliente);
+  }
+
+  if (status) {
+    sql += "status = ?, ";
+    params.push(status);
   }
 
   sql = sql.slice(0, -2);
