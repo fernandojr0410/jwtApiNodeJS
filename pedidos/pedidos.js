@@ -12,7 +12,7 @@ function findById(id) {
 
 function insert(dados) {
   const { id_pedido, id_funcionario, id_cliente, status } = dados;
-  let sql = `INSERT INTO pedido (id_pedido, id_funcionario, id_cliente) values (${id_pedido}, ${id_funcionario}, ${id_cliente}, ${status})`;
+  let sql = `INSERT INTO pedido (id_pedido, id_funcionario, id_cliente, status) values (${id_pedido}, ${id_funcionario}, ${id_cliente}, '${status}')`;
   return queryPromise(sql);
 }
 

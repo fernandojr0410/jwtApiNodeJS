@@ -1,85 +1,59 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const jwt = require("jsonwebtoken");
 
 const conn = require("./db/mysql.js");
-const clientes = require("./clientes/clientes.js");
 const funcionarios = require("./funcionarios/funcionarios.js");
+const clientes = require("./clientes/clientes.js");
 const produtos = require("./produtos/produtos.js");
 const pedidos = require("./pedidos/pedidos.js");
-const itens_pedidos = require("./itens_pedidos/itens_pedidos.js");
 const contas = require("./contas/contas.js");
 const pedidos_contas = require("./pedidos_contas/pedidos_contas.js");
+const itens_pedidos = require("./itens_pedidos/itens_pedidos.js");
+const fechamento_conta = require("./fechamento_conta/fechamento_conta.js");
 
 const app = express();
 app.use(express.json());
 app.use(express.static("public"));
 app.use(bodyParser.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
+const SECRET_KEY = "fernandojr";
 
 const PORT = 8080;
 const HOST = "http://localhost";
 
-// Clientes
-app.get("/clientes/findAll", (req, res) => {
-  clientes
-    .findAll()
-    .then((results) => {
-      res.send(results);
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+function verificarToken(req, res, next) {
+  const token = req.header("Authorization");
+
+  if (!token) {
+    return res.status(401).json({ mensagem: "Token não fornecido." });
+  }
+
+  try {
+    const decoded = jwt.verify(token, SECRET_KEY);
+    req.usuario = decoded;
+    next();
+  } catch (excecao) {
+    return res.status(400).json({ mensagem: "Token inválido." });
+  }
+}
+
+app.post("/login",  (req, res) => {
+  const { usuario, senha } = req.body;
+
+  // Verificar as credenciais e gerar o token
+  if (usuario === "fernandojr" && senha === "fernandojr") {
+    const token = jwt.sign({ usuario }, SECRET_KEY);
+    res.json({ token });
+  } else {
+    res.status(401).json({ mensagem: "Credenciais inválidas." });
+  }
 });
 
-app.get("/clientes/findById", (req, res) => {
-  clientes
-    .findById(req.query.id)
-    .then((results) => {
-      res.send(results);
-    })
-    .catch((error) => {
-      console.error(error);
-    });
-});
-
-app.post("/clientes/insert", (req, res) => {
-  clientes
-    .insert(req.body)
-    .then(() => {
-      res.send("Cliente cadastrado com sucesso!");
-    })
-    .catch((error) => {
-      console.error(error);
-      res.send(error);
-    });
-});
-
-app.put("/clientes/update", (req, res) => {
-  clientes
-    .update(req.body)
-    .then(() => {
-      res.send("Dados atualizados com sucesso!");
-    })
-    .catch((error) => {
-      console.error(error);
-      res.send(error);
-    });
-});
-
-app.delete("/clientes/delete", (req, res) => {
-  clientes
-    .deleteById(req.body)
-    .then(() => {
-      res.send("Registro deletado com sucesso!");
-    })
-    .catch((error) => {
-      console.error(error);
-      res.send(error);
-    });
-});
+app.use(verificarToken);
 
 // Funcionarios
-app.get("/funcionarios/findAll", (req, res) => {
+app.get("/funcionarios/findAll", verificarToken, (req, res) => {
   funcionarios
     .findAll()
     .then((results) => {
@@ -90,7 +64,7 @@ app.get("/funcionarios/findAll", (req, res) => {
     });
 });
 
-app.get("/funcionarios/findById", (req, res) => {
+app.get("/funcionarios/findById", verificarToken, (req, res) => {
   funcionarios
     .findById(req.query.id)
     .then((results) => {
@@ -101,7 +75,7 @@ app.get("/funcionarios/findById", (req, res) => {
     });
 });
 
-app.post("/funcionarios/insert", (req, res) => {
+app.post("/funcionarios/insert", verificarToken, (req, res) => {
   funcionarios
     .insert(req.body)
     .then(() => {
@@ -113,7 +87,7 @@ app.post("/funcionarios/insert", (req, res) => {
     });
 });
 
-app.put("/funcionarios/update", (req, res) => {
+app.put("/funcionarios/update", verificarToken, (req, res) => {
   funcionarios
     .update(req.body)
     .then(() => {
@@ -125,7 +99,7 @@ app.put("/funcionarios/update", (req, res) => {
     });
 });
 
-app.delete("/funcionarios/delete", (req, res) => {
+app.delete("/funcionarios/delete", verificarToken, (req, res) => {
   funcionarios
     .deleteById(req.body)
     .then(() => {
@@ -137,8 +111,67 @@ app.delete("/funcionarios/delete", (req, res) => {
     });
 });
 
+// Clientes
+app.get("/clientes/findAll", verificarToken, (req, res) => {
+  clientes
+    .findAll()
+    .then((results) => {
+      res.send(results);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+});
+
+app.get("/clientes/findById", verificarToken, (req, res) => {
+  clientes
+    .findById(req.query.id)
+    .then((results) => {
+      res.send(results);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+});
+
+app.post("/clientes/insert", verificarToken, (req, res) => {
+  clientes
+    .insert(req.body)
+    .then(() => {
+      res.send("Cliente cadastrado com sucesso!");
+    })
+    .catch((error) => {
+      console.error(error);
+      res.send(error);
+    });
+});
+
+app.put("/clientes/update", verificarToken, (req, res) => {
+  clientes
+    .update(req.body)
+    .then(() => {
+      res.send("Dados atualizados com sucesso!");
+    })
+    .catch((error) => {
+      console.error(error);
+      res.send(error);
+    });
+});
+
+app.delete("/clientes/delete", verificarToken, (req, res) => {
+  clientes
+    .deleteById(req.body)
+    .then(() => {
+      res.send("Registro deletado com sucesso!");
+    })
+    .catch((error) => {
+      console.error(error);
+      res.send(error);
+    });
+});
+
 //Produtos
-app.get("/produtos/findAll", (req, res) => {
+app.get("/produtos/findAll", verificarToken, (req, res) => {
   produtos
     .findAll()
     .then((results) => {
@@ -149,7 +182,7 @@ app.get("/produtos/findAll", (req, res) => {
     });
 });
 
-app.get("/produtos/findById", (req, res) => {
+app.get("/produtos/findById", verificarToken, (req, res) => {
   produtos
     .findById(req.query.id)
     .then((results) => {
@@ -160,7 +193,7 @@ app.get("/produtos/findById", (req, res) => {
     });
 });
 
-app.post("/produtos/insert", (req, res) => {
+app.post("/produtos/insert", verificarToken, (req, res) => {
   produtos
     .insert(req.body)
     .then(() => {
@@ -172,7 +205,7 @@ app.post("/produtos/insert", (req, res) => {
     });
 });
 
-app.put("/produtos/update", (req, res) => {
+app.put("/produtos/update", verificarToken, (req, res) => {
   produtos
     .update(req.body)
     .then(() => {
@@ -184,7 +217,7 @@ app.put("/produtos/update", (req, res) => {
     });
 });
 
-app.delete("/produtos/delete", (req, res) => {
+app.delete("/produtos/delete", verificarToken, (req, res) => {
   produtos
     .deleteById(req.body)
     .then(() => {
@@ -197,7 +230,7 @@ app.delete("/produtos/delete", (req, res) => {
 });
 
 //Pedidos
-app.get("/pedidos/findAll", (req, res) => {
+app.get("/pedidos/findAll", verificarToken, (req, res) => {
   pedidos
     .findAll()
     .then((results) => {
@@ -208,7 +241,7 @@ app.get("/pedidos/findAll", (req, res) => {
     });
 });
 
-app.get("/pedidos/findById", (req, res) => {
+app.get("/pedidos/findById", verificarToken, (req, res) => {
   pedidos
     .findById(req.query.id)
     .then((results) => {
@@ -219,7 +252,7 @@ app.get("/pedidos/findById", (req, res) => {
     });
 });
 
-app.post("/pedidos/insert", (req, res) => {
+app.post("/pedidos/insert", verificarToken, (req, res) => {
   pedidos
     .insert(req.body)
     .then(() => {
@@ -231,7 +264,7 @@ app.post("/pedidos/insert", (req, res) => {
     });
 });
 
-app.put("/pedidos/update", (req, res) => {
+app.put("/pedidos/update", verificarToken, (req, res) => {
   pedidos
     .update(req.body)
     .then(() => {
@@ -243,7 +276,7 @@ app.put("/pedidos/update", (req, res) => {
     });
 });
 
-app.delete("/pedidos/delete", (req, res) => {
+app.delete("/pedidos/delete", verificarToken, (req, res) => {
   pedidos
     .deleteById(req.body)
     .then(() => {
@@ -255,9 +288,9 @@ app.delete("/pedidos/delete", (req, res) => {
     });
 });
 
-//Itens Pedidos
-app.get("/itens_pedidos/findAll", (req, res) => {
-  itens_pedidos
+//Conta
+app.get("/contas/findAll", verificarToken, (req, res) => {
+  contas
     .findAll()
     .then((results) => {
       res.send(results);
@@ -267,8 +300,8 @@ app.get("/itens_pedidos/findAll", (req, res) => {
     });
 });
 
-app.get("/itens_pedidos/findById", (req, res) => {
-  itens_pedidos
+app.get("/contas/findById", verificarToken, (req, res) => {
+  contas
     .findById(req.query.id)
     .then((results) => {
       res.send(results);
@@ -278,8 +311,8 @@ app.get("/itens_pedidos/findById", (req, res) => {
     });
 });
 
-app.post("/itens_pedidos/insert", (req, res) => {
-  itens_pedidos
+app.post("/contas/insert", verificarToken, (req, res) => {
+  contas
     .insert(req.body)
     .then(() => {
       res.send("Pedido realizado com sucesso!");
@@ -290,8 +323,8 @@ app.post("/itens_pedidos/insert", (req, res) => {
     });
 });
 
-app.put("/itens_pedidos/update", (req, res) => {
-  itens_pedidos
+app.put("/contas/update", verificarToken, (req, res) => {
+  contas
     .update(req.body)
     .then(() => {
       res.send("Pedido atualizados com sucesso!");
@@ -302,8 +335,8 @@ app.put("/itens_pedidos/update", (req, res) => {
     });
 });
 
-app.delete("/itens_pedidos/delete", (req, res) => {
-  itens_pedidos
+app.delete("/contas/delete", verificarToken, (req, res) => {
+  contas
     .deleteById(req.body)
     .then(() => {
       res.send("Pedido deletado com sucesso!");
@@ -315,7 +348,7 @@ app.delete("/itens_pedidos/delete", (req, res) => {
 });
 
 // Pedidos_Contas
-app.get("/pedidos_contas/findAll", (req, res) => {
+app.get("/pedidos_contas/findAll", verificarToken, (req, res) => {
   pedidos_contas
     .findAll()
     .then((results) => {
@@ -326,7 +359,7 @@ app.get("/pedidos_contas/findAll", (req, res) => {
     });
 });
 
-app.get("/pedidos_contas/findById", (req, res) => {
+app.get("/pedidos_contas/findById", verificarToken, (req, res) => {
   pedidos_contas
     .findById(req.query.id)
     .then((results) => {
@@ -337,7 +370,7 @@ app.get("/pedidos_contas/findById", (req, res) => {
     });
 });
 
-app.post("/pedidos_contas/insert", (req, res) => {
+app.post("/pedidos_contas/insert", verificarToken, (req, res) => {
   pedidos_contas
     .insert(req.body)
     .then(() => {
@@ -349,7 +382,7 @@ app.post("/pedidos_contas/insert", (req, res) => {
     });
 });
 
-app.put("/pedidos_contas/update", (req, res) => {
+app.put("/pedidos_contas/update", verificarToken, (req, res) => {
   pedidos_contas
     .update(req.body)
     .then(() => {
@@ -361,7 +394,7 @@ app.put("/pedidos_contas/update", (req, res) => {
     });
 });
 
-app.delete("/pedidos_contas/delete", (req, res) => {
+app.delete("/pedidos_contas/delete", verificarToken, (req, res) => {
   pedidos_contas
     .deleteById(req.body)
     .then(() => {
@@ -373,52 +406,9 @@ app.delete("/pedidos_contas/delete", (req, res) => {
     });
 });
 
-//Fechamento da Conta
-app.post("/contas/fechamento_conta/insert", async (req, res) => {
-  try {
-    const { id_pedido, quantidade_pessoa, pagamento } = req.body;
-
-    //Fechar conta
-    if (quantidade_pessoa > 4) {
-      res.send("O fechamento do pedido é permitido para no máximo 4 pessoas.");
-    }
-
-    // Calcular total da conta
-    const total_conta = await contas.calcularTotalConta(id_pedido);
-
-    // Calcular valor por pessoa
-    const valor_individual = total_conta / quantidade_pessoa;
-
-    // Criar registro na tabela de contas
-    const id_conta = await contas.criarConta(
-      total_conta,
-      valor_individual,
-      pagamento
-    );
-
-    // Associar pedidos à conta
-    contas
-      .associarPedidosConta(2, 5)
-      .then(() => {
-        res.send("Pedido associado à conta com sucesso.");
-      })
-      .catch((error) => {
-        console.error(error);
-        res.send(error);
-      });
-
-    // Atualizar status dos pedidos
-    await contas.atualizarStatusPedidos(id_pedido);
-
-    res.send("Conta fechada com sucesso!");
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Erro ao fechar conta.");
-  }
-});
-
-app.get("/contas/fechamento_conta/findAll", (req, res) => {
-  contas
+//Itens Pedidos
+app.get("/itens_pedidos/findAll", verificarToken, (req, res) => {
+  itens_pedidos
     .findAll()
     .then((results) => {
       res.send(results);
@@ -428,8 +418,8 @@ app.get("/contas/fechamento_conta/findAll", (req, res) => {
     });
 });
 
-app.get("/contas/fechamento_conta/findById", (req, res) => {
-  contas
+app.get("/itens_pedidos/findById", verificarToken, (req, res) => {
+  itens_pedidos
     .findById(req.query.id)
     .then((results) => {
       res.send(results);
@@ -439,8 +429,20 @@ app.get("/contas/fechamento_conta/findById", (req, res) => {
     });
 });
 
-app.put("/contas/fechamento_conta/update", (req, res) => {
-  contas
+app.post("/itens_pedidos/insert", verificarToken, (req, res) => {
+  itens_pedidos
+    .insert(req.body)
+    .then(() => {
+      res.send("Pedido realizado com sucesso!");
+    })
+    .catch((error) => {
+      console.error(error);
+      res.send(error);
+    });
+});
+
+app.put("/itens_pedidos/update", verificarToken, (req, res) => {
+  itens_pedidos
     .update(req.body)
     .then(() => {
       res.send("Pedido atualizados com sucesso!");
@@ -451,11 +453,11 @@ app.put("/contas/fechamento_conta/update", (req, res) => {
     });
 });
 
-app.delete("/contas/fechamento_conta/delete", (req, res) => {
-  contas
+app.delete("/itens_pedidos/delete", verificarToken, (req, res) => {
+  itens_pedidos
     .deleteById(req.body)
     .then(() => {
-      res.send("Conta deletada com sucesso!");
+      res.send("Pedido deletado com sucesso!");
     })
     .catch((error) => {
       console.error(error);
@@ -463,12 +465,64 @@ app.delete("/contas/fechamento_conta/delete", (req, res) => {
     });
 });
 
+//Fechamento da Conta
+app.post(
+  "/contas/fechamento_conta/insert",
+  verificarToken,
+  async (req, res) => {
+    try {
+      const { id_pedido, quantidade_pessoa, pagamento } = req.body;
+
+      //Fechar conta
+      if (quantidade_pessoa > 4) {
+        res.send(
+          "O fechamento do pedido é permitido para no máximo 4 pessoas."
+        );
+      }
+
+      // Calcular total da conta
+      const total_conta = await fechamento_conta.calcularTotalConta(id_pedido);
+
+      // Calcular valor por pessoa
+      const valor_individual = total_conta / quantidade_pessoa;
+
+      // Criar registro na tabela de contas
+      const id_conta = await fechamento_conta.criarConta(
+        total_conta,
+        valor_individual,
+        pagamento
+      );
+
+      // Associar pedidos à conta
+      fechamento_conta
+        .associarPedidosConta(2, 5)
+        .then(() => {
+          res.send("Pedido associado à conta com sucesso.");
+        })
+        .catch((error) => {
+          console.error(error);
+          res.send(error);
+        });
+
+      // Atualizar status dos pedidos
+      await fechamento_conta.atualizarStatusPedidos(id_pedido);
+
+      res.send("Conta fechada com sucesso!");
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Erro ao fechar conta.");
+    }
+  }
+);
+
 //Relatório Cozinha
-app.get("/contas/relatorio_cozinha/:id_pedido", async (req, res) => {
+app.get("/relatorio_cozinha/:id_pedido", verificarToken, async (req, res) => {
   const id_pedido = req.params.id_pedido;
 
   try {
-    const relatorio = await contas.gerarRelatorioProducaoCozinha(id_pedido);
+    const relatorio = await fechamento_conta.gerarRelatorioProducaoCozinha(
+      id_pedido
+    );
     res.json(relatorio);
   } catch (error) {
     console.error(error);
