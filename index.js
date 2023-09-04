@@ -1,5 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+require("dotenv").config();
 const jwt = require("jsonwebtoken");
 
 const conn = require("./db/mysql.js");
@@ -17,50 +18,56 @@ app.use(express.json());
 app.use(express.static("public"));
 app.use(bodyParser.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
-const SECRET_KEY = "fernandojr";
 
 const PORT = 8080;
 const HOST = "http://localhost";
 
 function verificarToken(req, res, next) {
-  const token = req.header("Authorization");
+  const token = req.headers["x-access-token"];
 
   if (!token) {
-    return res.status(401).json({ mensagem: "Token não fornecido." });
+    return res
+      .status(401)
+      .json({ auth: false, mensagem: "Token não fornecido." });
   }
 
-  try {
-    const decoded = jwt.verify(token, SECRET_KEY);
-    req.usuario = decoded;
+  jwt.verify(token, process.env.SECRET, function (err, decoded) {
+    if (err) {
+      console.error("Erro na verificação do token:", err);
+      return res
+        .status(500)
+        .json({ auth: false, mensagem: "Falha ao autenticar token." });
+    }
+
+    console.log("Token verificado com sucesso:", decoded);
+
+    req.userID = decoded.id;
     next();
-  } catch (excecao) {
-    return res.status(400).json({ mensagem: "Token inválido." });
-  }
+  });
 }
 
-app.post("/login",  (req, res) => {
-  const { usuario, senha } = req.body;
-
-  // Verificar as credenciais e gerar o token
-  if (usuario === "fernandojr" && senha === "fernandojr") {
-    const token = jwt.sign({ usuario }, SECRET_KEY);
-    res.json({ token });
-  } else {
-    res.status(401).json({ mensagem: "Credenciais inválidas." });
+app.post("/login", (req, res, next) => {
+  if (req.body.user === "fernandojr" && req.body.pwd === "0410") {
+    const id = 1;
+    const token = jwt.sign({ id }, process.env.SECRET, {
+      expiresIn: 300,
+    });
+    return res.json({ auth: true, token: token });
   }
+  res.status(500).json({ mensagem: "Login Inválido!" });
 });
 
-app.use(verificarToken);
-
 // Funcionarios
-app.get("/funcionarios/findAll", verificarToken, (req, res) => {
+app.get("/funcionarios/findAll", verificarToken, (req, res, next) => {
   funcionarios
     .findAll()
     .then((results) => {
-      res.send(results);
+      const funcionariosFixos = [{ id: 1, nome: "fernandojr" }];
+      res.send([...results, ...funcionariosFixos]);
     })
     .catch((error) => {
       console.error(error);
+      res.status(500).json({ mensagem: "Erro ao buscar funcionários." });
     });
 });
 
