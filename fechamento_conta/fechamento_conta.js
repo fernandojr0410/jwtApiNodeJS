@@ -81,45 +81,44 @@ function atualizarStatusPedidos(id_pedido) {
 
 function gerarRelatorioProducaoCozinha(id_conta) {
   const sql = `
-      SELECT 
-        pr.id_produto, pr.nome, pr.preco, pr.ativo,
-        cl.id_cliente, cl.nome, cl.cpf, cl.ativo,
-        p.id_pedido, p.id_funcionario, p.id_cliente, p.status,
-        f.id_funcionario, f.nome,
-        c.id_conta, c.status, c.quantidade_pessoa, c.total_conta, c.valor_individual, c.pagamento
-      FROM item_pedido ip
-      JOIN produto pr ON ip.id_produto = pr.id_produto
-      JOIN pedido p ON ip.id_pedido = p.id_pedido
-      JOIN cliente cl ON p.id_cliente = cl.id_cliente
-      JOIN funcionario f ON p.id_funcionario = f.id_funcionario
-      JOIN pedido_conta pc ON p.id_pedido = pc.id_pedido
-      JOIN conta c ON pc.id_conta = c.id_conta
-      WHERE c.id_conta = ${id_conta}`;
+  SELECT 
+  pr.id_produto, pr.nome AS produto_nome, pr.preco, pr.ativo,
+  cl.id_cliente, cl.nome AS cliente_nome, cl.cpf, cl.ativo AS cliente_ativo,
+  p.id_pedido, p.id_funcionario, p.id_cliente AS pedido_id_cliente, p.status,
+  f.id_funcionario, f.nome AS funcionario_nome,
+  c.id_conta, c.status, c.quantidade_pessoa, c.total_conta, c.valor_individual, c.pagamento
+  FROM item_pedido ip
+  JOIN produto pr ON ip.id_produto = pr.id_produto
+  JOIN pedido p ON ip.id_pedido = p.id_pedido
+  JOIN cliente cl ON p.id_cliente = cl.id_cliente
+  JOIN funcionario f ON p.id_funcionario = f.id_funcionario
+  JOIN pedido_conta pc ON p.id_pedido = pc.id_pedido
+  JOIN conta c ON pc.id_conta = c.id_conta
+  WHERE c.id_conta = ${id_conta}`;
 
   return queryPromise(sql).then((result) => {
-    // Formatar as informações em um relatório
     const report = result.map((item) => ({
       produto: {
         id_produto: item.id_produto,
-        nome: item.nome,
+        nome: item.produto_nome,
         preco: item.preco,
         ativo: item.ativo,
       },
       cliente: {
         id_cliente: item.id_cliente,
-        nome: item.nome,
+        nome: item.cliente_nome,
         cpf: item.cpf,
-        ativo: item.ativo,
+        ativo: item.cliente_ativo,
       },
       pedido: {
         id_pedido: item.id_pedido,
         id_funcionario: item.id_funcionario,
-        id_cliente: item.id_cliente,
+        id_cliente: item.pedido_id_cliente,
         status: item.status,
       },
       funcionario: {
         id_funcionario: item.id_funcionario,
-        nome: item.nome,
+        nome: item.funcionario_nome,
       },
       conta: {
         id_conta: item.id_conta,
@@ -130,7 +129,6 @@ function gerarRelatorioProducaoCozinha(id_conta) {
         pagamento: item.pagamento,
       },
     }));
-
     return report;
   });
 }

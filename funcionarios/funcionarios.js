@@ -45,7 +45,9 @@ function update(dados) {
 
 function deleteById(ids) {
   const idsDelete = ids.toString();
-  return queryPromise(`DELETE FROM funcionario WHERE id_funcionario IN (${idsDelete})`);
+  return queryPromise(
+    `DELETE FROM funcionario WHERE id_funcionario IN (${idsDelete})`
+  );
 }
 
 module.exports = {

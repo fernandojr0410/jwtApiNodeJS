@@ -6,9 +6,9 @@ function findAll() {
   return queryPromise("SELECT * FROM item_pedido");
 }
 
-function findById(id_pedido, id_produto) {
+function findById(id) {
   return queryPromise(
-    `SELECT * FROM item_pedido WHERE id_pedido = ${id_pedido} AND id_produto = ${id_produto}`
+    `SELECT * FROM item_pedido WHERE id_pedido AND id_produto = ${id}`
   );
 }
 
@@ -40,9 +40,11 @@ function update(dados) {
   return queryPromise(sql, params);
 }
 
-function deleteById(id_pedido, id_produto) {
+function deleteById(ids) {
+  const { id_pedido, id_produto } = ids;
   return queryPromise(
-    `DELETE FROM item_pedido WHERE id_pedido = ${id_pedido} AND id_produto = ${id_produto}`
+    `DELETE FROM item_pedido WHERE id_pedido = ? AND id_produto = ?`,
+    [id_pedido, id_produto]
   );
 }
 

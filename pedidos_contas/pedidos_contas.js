@@ -41,9 +41,10 @@ function update(dados) {
 }
 
 function deleteById(ids) {
-  const idsDelete = ids.toString();
+  const { id_pedido, id_conta } = ids;
   return queryPromise(
-    `DELETE FROM pedido WHERE id_pedido AND id_conta IN (${idsDelete})`
+    `DELETE FROM pedido_conta WHERE id_pedido = ? AND id_conta = ?`,
+    [id_pedido, id_conta]
   );
 }
 

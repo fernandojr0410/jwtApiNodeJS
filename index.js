@@ -50,7 +50,7 @@ app.post("/login", (req, res, next) => {
   if (req.body.user === "fernandojr" && req.body.pwd === "0410") {
     const id = 1;
     const token = jwt.sign({ id }, process.env.SECRET, {
-      expiresIn: 300,
+      expiresIn: 600,
     });
     return res.json({ auth: true, token: token });
   }
@@ -75,7 +75,8 @@ app.get("/funcionarios/findById", verificarToken, (req, res) => {
   funcionarios
     .findById(req.query.id)
     .then((results) => {
-      res.send(results);
+      const funcionariosFixos = [{ id: 1, nome: "fernandojr" }];
+      res.send([...results, ...funcionariosFixos]);
     })
     .catch((error) => {
       console.error(error);
@@ -123,7 +124,8 @@ app.get("/clientes/findAll", verificarToken, (req, res) => {
   clientes
     .findAll()
     .then((results) => {
-      res.send(results);
+      const clientesFixos = [{ id: 1, nome: "fernandojr" }];
+      res.send([...results, ...clientesFixos]);
     })
     .catch((error) => {
       console.error(error);
@@ -134,7 +136,8 @@ app.get("/clientes/findById", verificarToken, (req, res) => {
   clientes
     .findById(req.query.id)
     .then((results) => {
-      res.send(results);
+      const clientesFixos = [{ id: 1, nome: "fernandojr" }];
+      res.send([...results, ...clientesFixos]);
     })
     .catch((error) => {
       console.error(error);
@@ -182,7 +185,8 @@ app.get("/produtos/findAll", verificarToken, (req, res) => {
   produtos
     .findAll()
     .then((results) => {
-      res.send(results);
+      const produtosFixos = [{ id: 1, nome: "fernandojr" }];
+      res.send([...results, ...produtosFixos]);
     })
     .catch((error) => {
       console.error(error);
@@ -193,7 +197,8 @@ app.get("/produtos/findById", verificarToken, (req, res) => {
   produtos
     .findById(req.query.id)
     .then((results) => {
-      res.send(results);
+      const produtosFixos = [{ id: 1, nome: "fernandojr" }];
+      res.send([...results, ...produtosFixos]);
     })
     .catch((error) => {
       console.error(error);
@@ -241,7 +246,8 @@ app.get("/pedidos/findAll", verificarToken, (req, res) => {
   pedidos
     .findAll()
     .then((results) => {
-      res.send(results);
+      const pedidosFixos = [{ id: 1, nome: "fernandojr" }];
+      res.send([...results, ...pedidosFixos]);
     })
     .catch((error) => {
       console.error(error);
@@ -252,7 +258,8 @@ app.get("/pedidos/findById", verificarToken, (req, res) => {
   pedidos
     .findById(req.query.id)
     .then((results) => {
-      res.send(results);
+      const pedidosFixos = [{ id: 1, nome: "fernandojr" }];
+      res.send([...results, ...pedidosFixos]);
     })
     .catch((error) => {
       console.error(error);
@@ -300,7 +307,8 @@ app.get("/contas/findAll", verificarToken, (req, res) => {
   contas
     .findAll()
     .then((results) => {
-      res.send(results);
+      const contasFixos = [{ id: 1, nome: "fernandojr" }];
+      res.send([...results, ...contasFixos]);
     })
     .catch((error) => {
       console.error(error);
@@ -311,7 +319,8 @@ app.get("/contas/findById", verificarToken, (req, res) => {
   contas
     .findById(req.query.id)
     .then((results) => {
-      res.send(results);
+      const contasFixos = [{ id: 1, nome: "fernandojr" }];
+      res.send([...results, ...contasFixos]);
     })
     .catch((error) => {
       console.error(error);
@@ -359,7 +368,8 @@ app.get("/pedidos_contas/findAll", verificarToken, (req, res) => {
   pedidos_contas
     .findAll()
     .then((results) => {
-      res.send(results);
+      const pedidos_contasFixos = [{ id: 1, nome: "fernandojr" }];
+      res.send([...results, ...pedidos_contasFixos]);
     })
     .catch((error) => {
       console.error(error);
@@ -370,7 +380,8 @@ app.get("/pedidos_contas/findById", verificarToken, (req, res) => {
   pedidos_contas
     .findById(req.query.id)
     .then((results) => {
-      res.send(results);
+      const pedidos_contasFixos = [{ id: 1, nome: "fernandojr" }];
+      res.send([...results, ...pedidos_contasFixos]);
     })
     .catch((error) => {
       console.error(error);
@@ -418,7 +429,8 @@ app.get("/itens_pedidos/findAll", verificarToken, (req, res) => {
   itens_pedidos
     .findAll()
     .then((results) => {
-      res.send(results);
+      const itens_pedidosFixos = [{ id: 1, nome: "fernandojr" }];
+      res.send([...results, ...itens_pedidosFixos]);
     })
     .catch((error) => {
       console.error(error);
@@ -429,7 +441,8 @@ app.get("/itens_pedidos/findById", verificarToken, (req, res) => {
   itens_pedidos
     .findById(req.query.id)
     .then((results) => {
-      res.send(results);
+      const itens_pedidosFixos = [{ id: 1, nome: "fernandojr" }];
+      res.send([...results, ...itens_pedidosFixos]);
     })
     .catch((error) => {
       console.error(error);
@@ -513,7 +526,8 @@ app.post(
 
       // Atualizar status dos pedidos
       await fechamento_conta.atualizarStatusPedidos(id_pedido);
-
+      const fechamento_contaFixos = [{ id: 1, nome: "fernandojr" }];
+      res.send([...results, ...fechamento_contaFixos]);
       res.send("Conta fechada com sucesso!");
     } catch (error) {
       console.error(error);
