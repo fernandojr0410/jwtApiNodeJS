@@ -12,12 +12,15 @@ function findById(id) {
 
 function insert(dados) {
   const { nome, preco, ativo } = dados;
-  let sql = `INSERT INTO produto (nome, preco, ativo) values ('${nome}', ${preco}, '${ativo}')`;
+
+  let sql = `INSERT INTO produto (nome, preco, ativo) values ('${nome}', ${preco}, ${
+    ativo ? 1 : 0
+  })`;
   return queryPromise(sql);
 }
 
 function update(dados) {
-  const { id, nome, preco, ativo } = dados;
+  const { idProduto, nome, preco, ativo } = dados;
   const params = [];
   let sql = "UPDATE produto SET ";
 
@@ -38,14 +41,13 @@ function update(dados) {
 
   sql = sql.slice(0, -2);
   sql += " WHERE id_produto = ?";
-  params.push(id);
+  params.push(idProduto);
 
   return queryPromise(sql, params);
 }
 
-function deleteById(ids) {
-  const idsDelete = ids.toString();
-  return queryPromise(`DELETE FROM produto WHERE id_produto IN (${idsDelete})`);
+function deleteById(id) {
+  return queryPromise(`DELETE FROM produto WHERE id_produto IN (${id})`);
 }
 
 module.exports = {

@@ -3,6 +3,8 @@ const bodyParser = require("body-parser");
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
 
+const cors = require("cors"); //  cors
+
 const conn = require("./db/mysql.js");
 const funcionarios = require("./funcionarios/funcionarios.js");
 const clientes = require("./clientes/clientes.js");
@@ -18,8 +20,9 @@ app.use(express.json());
 app.use(express.static("public"));
 app.use(bodyParser.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
+app.use(cors());
 
-const PORT = 8080;
+const PORT = 6050;
 const HOST = "http://localhost";
 
 function verificarToken(req, res, next) {
@@ -50,7 +53,7 @@ app.post("/login", (req, res, next) => {
   if (req.body.user === "fernandojr" && req.body.pwd === "0410") {
     const id = 1;
     const token = jwt.sign({ id }, process.env.SECRET, {
-      expiresIn: 600,
+      expiresIn: Math.floor(Date.now() / 1000) + 86400,
     });
     return res.json({ auth: true, token: token });
   }
@@ -62,8 +65,8 @@ app.get("/funcionarios/findAll", verificarToken, (req, res, next) => {
   funcionarios
     .findAll()
     .then((results) => {
-      const funcionariosFixos = [{ id: 1, nome: "fernandojr" }];
-      res.send([...results, ...funcionariosFixos]);
+      const funcionario = { id: 1, nome: "fernandojr" };
+      res.send({ dadosUsuario: funcionario, dados: results });
     })
     .catch((error) => {
       console.error(error);
@@ -75,8 +78,8 @@ app.get("/funcionarios/findById", verificarToken, (req, res) => {
   funcionarios
     .findById(req.query.id)
     .then((results) => {
-      const funcionariosFixos = [{ id: 1, nome: "fernandojr" }];
-      res.send([...results, ...funcionariosFixos]);
+      const funcionario = { id: 1, nome: "fernandojr" };
+      res.send({ dadosUsuario: funcionario, dados: results });
     })
     .catch((error) => {
       console.error(error);
@@ -84,8 +87,10 @@ app.get("/funcionarios/findById", verificarToken, (req, res) => {
 });
 
 app.post("/funcionarios/insert", verificarToken, (req, res) => {
+  const dadosAtualizados = req.body;
+
   funcionarios
-    .insert(req.body)
+    .insert(dadosAtualizados)
     .then(() => {
       res.send("Funcionario cadastrado com sucesso!");
     })
@@ -95,9 +100,11 @@ app.post("/funcionarios/insert", verificarToken, (req, res) => {
     });
 });
 
-app.put("/funcionarios/update", verificarToken, (req, res) => {
+app.put("/funcionarios/update/:id", verificarToken, (req, res) => {
+  const dadosAtualizados = req.body;
+
   funcionarios
-    .update(req.body)
+    .update(dadosAtualizados)
     .then(() => {
       res.send("Dados atualizados com sucesso!");
     })
@@ -108,8 +115,12 @@ app.put("/funcionarios/update", verificarToken, (req, res) => {
 });
 
 app.delete("/funcionarios/delete", verificarToken, (req, res) => {
+  const { ids } = req.body;
+  if (!Array.isArray(ids) || ids.length === 0) {
+    return res.status(400).send("IDs inválidos ou ausentes.");
+  }
   funcionarios
-    .deleteById(req.body)
+    .deleteById(ids)
     .then(() => {
       res.send("Registro deletado com sucesso!");
     })
@@ -124,8 +135,8 @@ app.get("/clientes/findAll", verificarToken, (req, res) => {
   clientes
     .findAll()
     .then((results) => {
-      const clientesFixos = [{ id: 1, nome: "fernandojr" }];
-      res.send([...results, ...clientesFixos]);
+      const clientes = { id: 1, nome: "fernandojr" };
+      res.send({ dadosUsuario: clientes, dados: results });
     })
     .catch((error) => {
       console.error(error);
@@ -136,8 +147,8 @@ app.get("/clientes/findById", verificarToken, (req, res) => {
   clientes
     .findById(req.query.id)
     .then((results) => {
-      const clientesFixos = [{ id: 1, nome: "fernandojr" }];
-      res.send([...results, ...clientesFixos]);
+      const funcionario = { id: 1, nome: "fernandojr" };
+      res.send({ dadosUsuario: funcionario, dados: results });
     })
     .catch((error) => {
       console.error(error);
@@ -156,9 +167,11 @@ app.post("/clientes/insert", verificarToken, (req, res) => {
     });
 });
 
-app.put("/clientes/update", verificarToken, (req, res) => {
+app.put("/clientes/update/:id", verificarToken, (req, res) => {
+  const dadosAtualizados = req.body;
+
   clientes
-    .update(req.body)
+    .update(dadosAtualizados)
     .then(() => {
       res.send("Dados atualizados com sucesso!");
     })
@@ -169,8 +182,12 @@ app.put("/clientes/update", verificarToken, (req, res) => {
 });
 
 app.delete("/clientes/delete", verificarToken, (req, res) => {
+  const { ids } = req.body;
+  if (!Array.isArray(ids) || ids.length === 0) {
+    return res.status(400).send("IDs inválidos ou ausentes.");
+  }
   clientes
-    .deleteById(req.body)
+    .deleteById(ids)
     .then(() => {
       res.send("Registro deletado com sucesso!");
     })
@@ -185,8 +202,8 @@ app.get("/produtos/findAll", verificarToken, (req, res) => {
   produtos
     .findAll()
     .then((results) => {
-      const produtosFixos = [{ id: 1, nome: "fernandojr" }];
-      res.send([...results, ...produtosFixos]);
+      const produtos = { id: 1, nome: "fernandojr" };
+      res.send({ dadosUsuario: produtos, dados: results });
     })
     .catch((error) => {
       console.error(error);
@@ -197,8 +214,8 @@ app.get("/produtos/findById", verificarToken, (req, res) => {
   produtos
     .findById(req.query.id)
     .then((results) => {
-      const produtosFixos = [{ id: 1, nome: "fernandojr" }];
-      res.send([...results, ...produtosFixos]);
+      const produtos = { id: 1, nome: "fernandojr" };
+      res.send({ dadosUsuario: produtos, dados: results });
     })
     .catch((error) => {
       console.error(error);
@@ -217,9 +234,11 @@ app.post("/produtos/insert", verificarToken, (req, res) => {
     });
 });
 
-app.put("/produtos/update", verificarToken, (req, res) => {
+app.put("/produtos/update/:id", verificarToken, (req, res) => {
+  const dadosAtualizados = req.body;
+
   produtos
-    .update(req.body)
+    .update(dadosAtualizados)
     .then(() => {
       res.send("Dados atualizados com sucesso!");
     })
@@ -230,8 +249,12 @@ app.put("/produtos/update", verificarToken, (req, res) => {
 });
 
 app.delete("/produtos/delete", verificarToken, (req, res) => {
+  const { ids } = req.body;
+  if (!Array.isArray(ids) || ids.length === 0) {
+    return res.status(400).send("IDs inválidos ou ausentes.");
+  }
   produtos
-    .deleteById(req.body)
+    .deleteById(ids)
     .then(() => {
       res.send("Registro deletado com sucesso!");
     })
@@ -246,8 +269,8 @@ app.get("/pedidos/findAll", verificarToken, (req, res) => {
   pedidos
     .findAll()
     .then((results) => {
-      const pedidosFixos = [{ id: 1, nome: "fernandojr" }];
-      res.send([...results, ...pedidosFixos]);
+      const pedido = { id: 1, nome: "fernandojr" };
+      res.send({ dadosUsuario: pedido, dados: results });
     })
     .catch((error) => {
       console.error(error);
@@ -258,8 +281,8 @@ app.get("/pedidos/findById", verificarToken, (req, res) => {
   pedidos
     .findById(req.query.id)
     .then((results) => {
-      const pedidosFixos = [{ id: 1, nome: "fernandojr" }];
-      res.send([...results, ...pedidosFixos]);
+      const pedido = { id: 1, nome: "fernandojr" };
+      res.send({ dadosUsuario: pedido, dados: results });
     })
     .catch((error) => {
       console.error(error);
@@ -270,7 +293,7 @@ app.post("/pedidos/insert", verificarToken, (req, res) => {
   pedidos
     .insert(req.body)
     .then(() => {
-      res.send("Pedido realizado com sucesso!");
+      res.send("Pedido cadastrado com sucesso!");
     })
     .catch((error) => {
       console.error(error);
@@ -278,11 +301,13 @@ app.post("/pedidos/insert", verificarToken, (req, res) => {
     });
 });
 
-app.put("/pedidos/update", verificarToken, (req, res) => {
+app.put("/pedidos/update/:id", verificarToken, (req, res) => {
+  const dadosAtualizados = req.body;
+
   pedidos
-    .update(req.body)
+    .update(dadosAtualizados)
     .then(() => {
-      res.send("Pedido atualizados com sucesso!");
+      res.send("Dados atualizados com sucesso!");
     })
     .catch((error) => {
       console.error(error);
@@ -291,10 +316,14 @@ app.put("/pedidos/update", verificarToken, (req, res) => {
 });
 
 app.delete("/pedidos/delete", verificarToken, (req, res) => {
+  const { ids } = req.body;
+  if (!Array.isArray(ids) || ids.length === 0) {
+    return res.status(400).send("IDs inválidos ou ausentes.");
+  }
   pedidos
-    .deleteById(req.body)
+    .deleteById(ids)
     .then(() => {
-      res.send("Pedido deletado com sucesso!");
+      res.send("Registro deletado com sucesso!");
     })
     .catch((error) => {
       console.error(error);

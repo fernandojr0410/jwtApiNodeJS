@@ -42,15 +42,17 @@ function update(dados) {
   }
 
   sql = sql.slice(0, -2);
-  sql += " WHERE id_produto = ?";
+  sql += " WHERE id_pedido = ?";
   params.push(id_pedido);
+
+  console.log("SQL:", sql);
+  console.log("Params:", params);
 
   return queryPromise(sql, params);
 }
 
-function deleteById(ids) {
-  const idsDelete = ids.toString();
-  return queryPromise(`DELETE FROM pedido WHERE id_pedido IN (${idsDelete})`);
+function deleteById(id) {
+  return queryPromise(`DELETE FROM pedido WHERE id_pedido IN (${id})`);
 }
 
 module.exports = {
