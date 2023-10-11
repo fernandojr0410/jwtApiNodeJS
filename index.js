@@ -336,8 +336,8 @@ app.get("/contas/findAll", verificarToken, (req, res) => {
   contas
     .findAll()
     .then((results) => {
-      const contasFixos = [{ id: 1, nome: "fernandojr" }];
-      res.send([...results, ...contasFixos]);
+      const contas = { id: 1, nome: "fernandojr" };
+      res.send({ dadosUsuario: contas, dados: results });
     })
     .catch((error) => {
       console.error(error);
@@ -348,8 +348,8 @@ app.get("/contas/findById", verificarToken, (req, res) => {
   contas
     .findById(req.query.id)
     .then((results) => {
-      const contasFixos = [{ id: 1, nome: "fernandojr" }];
-      res.send([...results, ...contasFixos]);
+      const conta = { id: 1, nome: "fernandojr" };
+      res.send({ dadosUsuario: conta, dados: results });
     })
     .catch((error) => {
       console.error(error);
@@ -357,10 +357,11 @@ app.get("/contas/findById", verificarToken, (req, res) => {
 });
 
 app.post("/contas/insert", verificarToken, (req, res) => {
+  console.log("aqui",req.body);
   contas
     .insert(req.body)
     .then(() => {
-      res.send("Pedido realizado com sucesso!");
+      res.send("Conta cadastrado com sucesso!");
     })
     .catch((error) => {
       console.error(error);
@@ -368,11 +369,13 @@ app.post("/contas/insert", verificarToken, (req, res) => {
     });
 });
 
-app.put("/contas/update", verificarToken, (req, res) => {
+app.put("/contas/update/:id", verificarToken, (req, res) => {
+  const dadosAtualizados = req.body;
+
   contas
-    .update(req.body)
+    .update(dadosAtualizados)
     .then(() => {
-      res.send("Pedido atualizados com sucesso!");
+      res.send("Dados atualizados com sucesso!");
     })
     .catch((error) => {
       console.error(error);
@@ -381,10 +384,14 @@ app.put("/contas/update", verificarToken, (req, res) => {
 });
 
 app.delete("/contas/delete", verificarToken, (req, res) => {
+  const { ids } = req.body;
+  if (!Array.isArray(ids) || ids.length === 0) {
+    return res.status(400).send("IDs inválidos ou ausentes.");
+  }
   contas
-    .deleteById(req.body)
+    .deleteById(ids)
     .then(() => {
-      res.send("Pedido deletado com sucesso!");
+      res.send("Registro deletado com sucesso!");
     })
     .catch((error) => {
       console.error(error);

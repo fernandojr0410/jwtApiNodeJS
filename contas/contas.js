@@ -13,19 +13,36 @@ function findById(id) {
 function insert(dados) {
   const {
     status,
-    quantidade_pessoa,
-    total_conta,
-    valor_individual,
+    quantidadePessoa,
+    totalConta,
+    valorIndividual,
     pagamento,
     observacao,
   } = dados;
-  let sql = `INSERT INTO conta (status, quantidade_pessoa, total_conta, valor_individual, pagamento, observacao) values (${status}, ${quantidade_pessoa}, ${total_conta}, ${valor_individual}, '${pagamento}', '${observacao}')`;
-  return queryPromise(sql);
+
+  const statusNumerico = status === "1" ? 1 : 0;
+  const quantidadePessoaNumerico = parseInt(quantidadePessoa);
+  const totalContaDecimal = parseFloat(totalConta);
+  const valorIndividualDecimal = parseFloat(valorIndividual);
+
+  const sql =
+    "INSERT INTO conta (status, quantidade_pessoa, total_conta, valor_individual, pagamento, observacao) VALUES (?, ?, ?, ?, ?, ?)";
+
+  const values = [
+    statusNumerico,
+    quantidadePessoaNumerico,
+    totalContaDecimal,
+    valorIndividualDecimal,
+    pagamento,
+    observacao,
+  ];
+
+  return queryPromise(sql, values);
 }
 
 function update(dados) {
   const {
-    id,
+    idConta,
     status,
     quantidade_pessoa,
     total_conta,
@@ -67,14 +84,13 @@ function update(dados) {
   }
   sql = sql.slice(0, -2);
   sql += " WHERE id_conta = ?";
-  params.push(id);
+  params.push(idConta);
 
   return queryPromise(sql, params);
 }
 
-function deleteById(ids) {
-  const idsDelete = ids.toString();
-  return queryPromise(`DELETE FROM conta WHERE id_conta IN (${idsDelete})`);
+function deleteById(id) {
+  return queryPromise(`DELETE FROM conta WHERE id_conta IN (${id})`);
 }
 
 module.exports = {
