@@ -357,7 +357,7 @@ app.get("/contas/findById", verificarToken, (req, res) => {
 });
 
 app.post("/contas/insert", verificarToken, (req, res) => {
-  console.log("aqui",req.body);
+  console.log("aqui", req.body);
   contas
     .insert(req.body)
     .then(() => {
@@ -371,7 +371,6 @@ app.post("/contas/insert", verificarToken, (req, res) => {
 
 app.put("/contas/update/:id", verificarToken, (req, res) => {
   const dadosAtualizados = req.body;
-
   contas
     .update(dadosAtualizados)
     .then(() => {
@@ -398,26 +397,53 @@ app.delete("/contas/delete", verificarToken, (req, res) => {
       res.send(error);
     });
 });
-
-// Pedidos_Contas
-app.get("/pedidos_contas/findAll", verificarToken, (req, res) => {
-  pedidos_contas
+app.get("/contas/findAll", verificarToken, (req, res) => {
+  contas
     .findAll()
     .then((results) => {
-      const pedidos_contasFixos = [{ id: 1, nome: "fernandojr" }];
-      res.send([...results, ...pedidos_contasFixos]);
+      const contas = { id: 1, nome: "fernandojr" };
+      res.send({ dadosUsuario: contas, dados: results });
     })
     .catch((error) => {
       console.error(error);
     });
 });
 
-app.get("/pedidos_contas/findById", verificarToken, (req, res) => {
-  pedidos_contas
+app.get("/contas/findById", verificarToken, (req, res) => {
+  contas
     .findById(req.query.id)
     .then((results) => {
-      const pedidos_contasFixos = [{ id: 1, nome: "fernandojr" }];
-      res.send([...results, ...pedidos_contasFixos]);
+      const conta = { id: 1, nome: "fernandojr" };
+      res.send({ dadosUsuario: conta, dados: results });
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+});
+
+// Pedidos_Contas
+app.get("/pedidos_contas/findAll", verificarToken, (req, res) => {
+  pedidos_contas
+    .findAll()
+    .then((results) => {
+      const usuario = { id: 1, nome: "fernandojr" };
+      res.send({ dadosUsuario: usuario, dados: results });
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+});
+
+// Rota para buscar pedido e conta por ID
+app.get("/pedidos_contas/findById", verificarToken, (req, res) => {
+  const idPedido = req.query.id_pedido;
+  const idConta = req.query.id_conta;
+
+  pedidos_contas
+    .findById(idPedido, idConta)
+    .then((results) => {
+      const usuario = { id: 1, nome: "fernandojr" };
+      res.send({ dadosUsuario: usuario, dados: results });
     })
     .catch((error) => {
       console.error(error);

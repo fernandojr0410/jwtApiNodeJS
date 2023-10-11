@@ -42,7 +42,7 @@ function insert(dados) {
 
 function update(dados) {
   const {
-    idConta,
+    id_conta,
     status,
     quantidade_pessoa,
     total_conta,
@@ -84,7 +84,7 @@ function update(dados) {
   }
   sql = sql.slice(0, -2);
   sql += " WHERE id_conta = ?";
-  params.push(idConta);
+  params.push(id_conta);
 
   return queryPromise(sql, params);
 }

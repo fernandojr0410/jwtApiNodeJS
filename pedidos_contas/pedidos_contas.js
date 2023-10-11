@@ -6,9 +6,9 @@ function findAll() {
   return queryPromise("SELECT * FROM pedido_conta");
 }
 
-function findById(id) {
+function findById(id_pedido, id_conta) {
   return queryPromise(
-    `SELECT * FROM pedido_conta WHERE id_pedido AND id_conta = ${id}`
+    `SELECT * FROM pedido_conta WHERE id_pedido = ${id_pedido} AND id_conta = ${id_conta}`
   );
 }
 
