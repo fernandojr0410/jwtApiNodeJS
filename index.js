@@ -434,7 +434,6 @@ app.get("/pedidos_contas/findAll", verificarToken, (req, res) => {
     });
 });
 
-// Rota para buscar pedido e conta por ID
 app.get("/pedidos_contas/findById", verificarToken, (req, res) => {
   const idPedido = req.query.id_pedido;
   const idConta = req.query.id_conta;
@@ -474,17 +473,22 @@ app.put("/pedidos_contas/update", verificarToken, (req, res) => {
     });
 });
 
-app.delete("/pedidos_contas/delete", verificarToken, (req, res) => {
-  pedidos_contas
-    .deleteById(req.body)
-    .then(() => {
-      res.send("Pedido deletado com sucesso!");
-    })
-    .catch((error) => {
-      console.error(error);
-      res.send(error);
-    });
-});
+app.delete(
+  "/pedidos_contas/delete/:id_pedido/:id_conta",
+  verificarToken,
+  (req, res) => {
+    const { id_pedido, id_conta } = req.params;
+    pedidos_contas
+      .deleteById({ id_pedido, id_conta })
+      .then(() => {
+        res.send("Pedido deletado com sucesso!");
+      })
+      .catch((error) => {
+        console.error(error);
+        res.send(error);
+      });
+  }
+);
 
 //Itens Pedidos
 app.get("/itens_pedidos/findAll", verificarToken, (req, res) => {
