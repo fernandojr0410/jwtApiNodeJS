@@ -495,8 +495,8 @@ app.get("/itens_pedidos/findAll", verificarToken, (req, res) => {
   itens_pedidos
     .findAll()
     .then((results) => {
-      const itens_pedidosFixos = [{ id: 1, nome: "fernandojr" }];
-      res.send([...results, ...itens_pedidosFixos]);
+      const usuario = { id: 1, nome: "fernandojr" };
+      res.send({ dadosUsuario: usuario, dados: results });
     })
     .catch((error) => {
       console.error(error);
@@ -504,14 +504,18 @@ app.get("/itens_pedidos/findAll", verificarToken, (req, res) => {
 });
 
 app.get("/itens_pedidos/findById", verificarToken, (req, res) => {
+  const idPedido = req.query.id_pedido;
+  const idProduto = req.query.id_produto;
+
   itens_pedidos
-    .findById(req.query.id)
+    .findById(idPedido, idProduto)
     .then((results) => {
-      const itens_pedidosFixos = [{ id: 1, nome: "fernandojr" }];
-      res.send([...results, ...itens_pedidosFixos]);
+      const usuario = { id: 1, nome: "fernandojr" };
+      res.send({ dadosUsuario: usuario, dados: results });
     })
     .catch((error) => {
       console.error(error);
+      res.status(500).send("Erro ao buscar Pedido e Produto");
     });
 });
 
@@ -539,17 +543,22 @@ app.put("/itens_pedidos/update", verificarToken, (req, res) => {
     });
 });
 
-app.delete("/itens_pedidos/delete", verificarToken, (req, res) => {
-  itens_pedidos
-    .deleteById(req.body)
-    .then(() => {
-      res.send("Pedido deletado com sucesso!");
-    })
-    .catch((error) => {
-      console.error(error);
-      res.send(error);
-    });
-});
+app.delete(
+  "/itens_pedidos/delete/:id_pedido/:id_conta",
+  verificarToken,
+  (req, res) => {
+    const { id_pedido, id_produto } = req.params;
+    itens_pedidos
+      .deleteById({ id_pedido, id_produto })
+      .then(() => {
+        res.send("Pedido deletado com sucesso!");
+      })
+      .catch((error) => {
+        console.error(error);
+        res.send(error);
+      });
+  }
+);
 
 //Fechamento da Conta
 app.post(

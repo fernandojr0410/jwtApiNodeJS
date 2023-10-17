@@ -6,9 +6,9 @@ function findAll() {
   return queryPromise("SELECT * FROM item_pedido");
 }
 
-function findById(id) {
+function findById(id_pedido, id_produto) {
   return queryPromise(
-    `SELECT * FROM item_pedido WHERE id_pedido AND id_produto = ${id}`
+    `SELECT * FROM item_pedido WHERE id_pedido = ${id_pedido} AND id_produto = ${id_produto}`
   );
 }
 
