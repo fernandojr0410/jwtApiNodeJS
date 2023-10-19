@@ -79,7 +79,7 @@ function atualizarStatusPedidos(id_pedido) {
   );
 }
 
-function gerarRelatorioProducaoCozinha(id_conta) {
+function gerarRelatorioProducaoCozinha(id_pedido) {
   const sql = `
   SELECT 
   pr.id_produto, pr.nome AS produto_nome, pr.preco, pr.ativo,
@@ -94,7 +94,7 @@ function gerarRelatorioProducaoCozinha(id_conta) {
   JOIN funcionario f ON p.id_funcionario = f.id_funcionario
   JOIN pedido_conta pc ON p.id_pedido = pc.id_pedido
   JOIN conta c ON pc.id_conta = c.id_conta
-  WHERE c.id_conta = ${id_conta}`;
+  WHERE p.id_pedido = ${id_pedido}`;
 
   return queryPromise(sql).then((result) => {
     const report = result.map((item) => ({
